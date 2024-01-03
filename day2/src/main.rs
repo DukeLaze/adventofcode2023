@@ -88,17 +88,40 @@ fn is_legal_game(game: &Game) -> bool {
         .all(|draw| draw.red <= MAX_RED && draw.green <= MAX_GREEN && draw.blue <= MAX_BLUE)
 }
 
+fn get_power_of_minimum_required_colors_for_game(game: &Game) -> u32 {
+    // Find the minimum number for each color
+    let mut min_red = 0;
+    let mut min_green = 0;
+    let mut min_blue = 0;
+    for draw in &game.draws {
+        min_red = std::cmp::max(min_red, draw.red);
+        min_green = std::cmp::max(min_green, draw.green);
+        min_blue = std::cmp::max(min_blue, draw.blue);
+    }
+    println!("min_red: {}, min_green: {}, min_blue: {} for game {:?}", min_red, min_green, min_blue, game);
+    // Multiply together
+    min_red * min_green * min_blue
+}
+
 fn main() {
     let input = std::fs::read_to_string("input.txt").unwrap();
 
     let games = parse_input(&input);
 
+    // Part 1
     let mut id_sums = 0;
-    for game in games {
+    for game in games.iter() {
         if is_legal_game(&game) {
             id_sums += game.id;
         }
     }
 
-    println!("{}", id_sums);
+    // Part 2
+    let mut power_sum = 0;
+    for game in games.iter() {
+        power_sum += get_power_of_minimum_required_colors_for_game(&game);
+    }
+
+    println!("id_sums: {}", id_sums);
+    println!("power_sum: {}", power_sum);
 }
